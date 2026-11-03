@@ -2,7 +2,7 @@
 
 **Route:** Pico  
 **Time:** About 45 minutes. You may split it across days.  
-**Lesson:** Open [Introduction to Raspberry Pi Pico](https://projects.raspberrypi.org/en/collections/physical_computing) and choose “Sound machine”. Use its circuit diagram for every connection.
+**Lesson:** Open [Sound machine](https://projects.raspberrypi.org/en/projects/sound-machine) (part of Introduction to Raspberry Pi Pico). Use its circuit diagram for every connection.
 
 ## Before starting
 

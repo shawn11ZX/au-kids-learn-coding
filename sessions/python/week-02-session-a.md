@@ -2,7 +2,7 @@
 
 **Route:** Python  
 **Time:** About 45 minutes. You may split it across days.  
-**Lesson:** Open [Introduction to Python](https://projects.raspberrypi.org/en/collections/python) and choose “Target practice”.
+**Lesson:** Open [Target practice](https://projects.raspberrypi.org/en/projects/target-practice) (part of Introduction to Python).
 
 ## Before starting
 

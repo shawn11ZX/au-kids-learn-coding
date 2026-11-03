@@ -2,7 +2,7 @@
 
 **Route:** Python  
 **Time:** About 60 minutes. You may split it across days.  
-**Lesson:** Open [Introduction to Python](https://projects.raspberrypi.org/en/collections/python) and choose “Powerful patterns”.
+**Lesson:** Open [Powerful patterns](https://projects.raspberrypi.org/en/projects/powerful-patterns) (part of Introduction to Python).
 
 ## Before starting
 

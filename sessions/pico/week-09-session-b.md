@@ -2,7 +2,7 @@
 
 **Route:** Pico  
 **Time:** About 60 minutes. You may split it across days.  
-**Lesson:** Open [Introduction to Raspberry Pi Pico](https://projects.raspberrypi.org/en/collections/physical_computing) and choose “Beating heart”. Use its circuit diagram for every connection.
+**Lesson:** Open [Beating heart](https://projects.raspberrypi.org/en/projects/beating-heart) (part of Introduction to Raspberry Pi Pico). Use its circuit diagram for every connection.
 
 ## Before starting
 

@@ -2,7 +2,7 @@
 
 **Route:** Python  
 **Time:** About 60 minutes. You may split it across days.  
-**Lesson:** Open [Introduction to Python](https://projects.raspberrypi.org/en/collections/python) and choose “Don’t collide!”.
+**Lesson:** Open [Don’t collide!](https://projects.raspberrypi.org/en/projects/dont-collide) (part of Introduction to Python).
 
 ## Before starting
 

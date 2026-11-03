@@ -2,7 +2,7 @@
 
 **Route:** Pico  
 **Time:** About 60 minutes. You may split it across days.  
-**Lesson:** Open [Introduction to Raspberry Pi Pico](https://projects.raspberrypi.org/en/collections/physical_computing) and choose “Mood indicator”. Use its circuit diagram for every connection.
+**Lesson:** Open [Mood indicator](https://projects.raspberrypi.org/en/projects/mood-indicator) (part of Introduction to Raspberry Pi Pico). Use its circuit diagram for every connection.
 
 ## Before starting
 

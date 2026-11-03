@@ -2,7 +2,7 @@
 
 **Route:** Buggy  
 **Time:** About 45 minutes. You may split it across days.  
-**Guides:** Use [Teach Computing’s robot buggy unit](https://teachcomputing.org/curriculum/key-stage-4/physical-computing-project) for the lesson goal and [Kitronik’s buggy tutorials](https://kitronik.co.uk/blogs/resources/online-tutorial-autonomous-robotics-platform-for-pico-motors) if using that kit. Follow your kit maker’s wiring and power directions.
+**Guides:** Use [Teach Computing’s robot buggy unit](https://teachcomputing.org/curriculum/key-stage-4/physical-computing-project) for the lesson goal and [Kitronik: using the motors](https://kitronik.co.uk/blogs/resources/online-tutorial-autonomous-robotics-platform-for-pico-motors) if using that kit. Follow your kit maker’s wiring and power directions.
 
 ## Before starting
 
