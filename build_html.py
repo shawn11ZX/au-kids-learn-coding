@@ -216,7 +216,35 @@ pre code { padding: 0; }
 .session-card:target { outline: 3px solid #dfb34e; outline-offset: 3px; }
 .session-card[hidden] { display: none; }
 .session-card ul li { margin: .35rem 0; }
-.session-card input[type="checkbox"] { accent-color: var(--accent); }
+.session-card input[type="checkbox"] { accent-color: var(--accent); width: 1.1rem; height: 1.1rem; cursor: pointer; }
+.done-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  margin: 0 0 .6rem;
+  padding: .3rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--soft);
+  font-weight: 650;
+  cursor: pointer;
+}
+.session-card.is-done { border-left-color: #3f9b4b; background: #f6fbf5; }
+.session-card.is-done .done-toggle { background: #d9f0d6; border-color: #9fd19a; }
+a.map-done::after { content: " ✓"; color: #2f8a3b; font-weight: 700; }
+.progress-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; width: 100%; }
+.progress-bar strong { margin-right: .5rem; }
+.progress-bar button {
+  border: 1px solid #9eb8b8;
+  border-radius: .45rem;
+  padding: .35rem .65rem;
+  background: white;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: .9rem;
+}
+.progress-note { color: var(--muted); font-size: .85rem; }
 @media (max-width: 700px) {
   .toolbar { align-items: flex-start; flex-direction: column; gap: .35rem; }
   main { padding: 1rem .8rem 3rem; }
@@ -224,7 +252,7 @@ pre code { padding: 0; }
 }
 @media print {
   body { background: white; font-size: 11pt; }
-  .toolbar, .session-controls { display: none !important; }
+  .toolbar, .session-controls, .done-toggle { display: none !important; }
   main { max-width: none; padding: 0; }
   .session-card, .session-card[hidden] {
     display: block !important;
@@ -283,6 +311,119 @@ SCRIPT = """
   window.addEventListener("hashchange", revealHash);
   revealHash();
   applyFilters();
+
+  // Progress: ticks are kept in this browser's localStorage. No server is used.
+  const STORE_KEY = "au-kids-learn-coding:progress:v1";
+  const note = document.getElementById("progress-note");
+  const progressCount = document.getElementById("progress-count");
+  let progress = {};
+  let storageOk = true;
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+    if (saved && typeof saved === "object" && !Array.isArray(saved)) progress = saved;
+  } catch (error) {
+    storageOk = false;
+    note.textContent = "This browser cannot save ticks. Use “Save progress to a file”.";
+  }
+
+  function save() {
+    if (!storageOk) return;
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(progress));
+    } catch (error) {
+      storageOk = false;
+      note.textContent = "This browser cannot save ticks. Use “Save progress to a file”.";
+    }
+  }
+
+  const boxes = [];
+  for (const card of cards) {
+    const heading = card.querySelector("h3");
+    const toggle = document.createElement("label");
+    toggle.className = "done-toggle";
+    const doneBox = document.createElement("input");
+    doneBox.type = "checkbox";
+    doneBox.dataset.key = `${card.id}:done`;
+    doneBox.dataset.done = card.id;
+    toggle.append(doneBox, document.createTextNode(" Session done"));
+    heading.after(toggle);
+    boxes.push(doneBox);
+    card.querySelectorAll('ul input[type="checkbox"]').forEach((box, index) => {
+      box.disabled = false;
+      box.removeAttribute("disabled");
+      box.dataset.key = `${card.id}:item-${index}`;
+      boxes.push(box);
+    });
+  }
+  const mapLinks = [...document.querySelectorAll('a[href^="#session-"]')]
+    .filter((link) => !link.closest(".session-card"));
+
+  function render() {
+    let done = 0;
+    for (const box of boxes) box.checked = progress[box.dataset.key] === true;
+    for (const card of cards) {
+      const isDone = progress[`${card.id}:done`] === true;
+      card.classList.toggle("is-done", isDone);
+      if (isDone) done++;
+    }
+    for (const link of mapLinks) {
+      link.classList.toggle("map-done", progress[`${link.hash.slice(1)}:done`] === true);
+    }
+    progressCount.textContent = `${done} of ${cards.length} sessions done`;
+  }
+
+  for (const box of boxes) {
+    box.addEventListener("change", () => {
+      if (box.checked) progress[box.dataset.key] = true;
+      else delete progress[box.dataset.key];
+      save();
+      render();
+    });
+  }
+
+  document.getElementById("progress-export").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify({ app: "au-kids-learn-coding", version: 1, progress }, null, 2)],
+      { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `coding-progress-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  });
+
+  const fileInput = document.getElementById("progress-file");
+  document.getElementById("progress-import").addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files[0];
+    fileInput.value = "";
+    if (!file) return;
+    try {
+      const data = JSON.parse(await file.text());
+      if (data.app !== "au-kids-learn-coding" || typeof data.progress !== "object" || Array.isArray(data.progress)) {
+        throw new Error("not a progress file");
+      }
+      const known = new Set(boxes.map((box) => box.dataset.key));
+      const next = {};
+      for (const [key, value] of Object.entries(data.progress)) {
+        if (value === true && known.has(key)) next[key] = true;
+      }
+      progress = next;
+      save();
+      render();
+      note.textContent = `Loaded ${Object.keys(next).length} ticks from ${file.name}.`;
+    } catch (error) {
+      note.textContent = "That file is not a progress file from this site.";
+    }
+  });
+
+  document.getElementById("progress-reset").addEventListener("click", () => {
+    if (!confirm("Clear all ticks in this browser? Save a file first if you want a copy.")) return;
+    progress = {};
+    save();
+    render();
+  });
+
+  render();
 })();
 """
 
@@ -300,6 +441,14 @@ def page(body: str, session_count: int) -> str:
     <button type="button" data-route="pidog" aria-pressed="false">PiDog</button>
   </div>
   <span id="session-count"></span>
+  <div class="progress-bar" aria-label="Progress">
+    <strong id="progress-count"></strong>
+    <button type="button" id="progress-export">Save progress to a file</button>
+    <button type="button" id="progress-import">Load progress from a file</button>
+    <button type="button" id="progress-reset">Clear progress</button>
+    <input type="file" id="progress-file" accept="application/json,.json" hidden>
+    <span class="progress-note" id="progress-note">Ticks are saved in this browser only.</span>
+  </div>
 </div>"""
     marker = '<section id="session-guides"'
     if marker in body:
