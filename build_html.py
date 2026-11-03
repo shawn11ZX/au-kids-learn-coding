@@ -1,95 +1,72 @@
 #!/usr/bin/env python3
-"""Build one offline HTML guide from the curriculum and its session files."""
+"""Build a multi-page static site from the curriculum and its session files.
+
+Output layout (default: ./_site):
+  index.html                      overview, session map, shopping list
+  <stage>/index.html              list of the sessions in one stage
+  <stage>/week-NN-session-x.html  one page per session
+"""
 
 from __future__ import annotations
 
 import html
+import os
 import re
 import subprocess
+import sys
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent
 INDEX = ROOT / "11_year_old_robotics_python_curriculum.md"
-OUTPUT = ROOT / "11_year_old_robotics_python_curriculum.html"
-ROUTES = (
-    ("python", "Python basics"),
-    ("pico", "Pico 2 electronics"),
-    ("buggy", "Wheeled buggy"),
-    ("pidog", "PiDog V2"),
+OUT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else ROOT / "_site"
+TITLE = "Python and robotics"
+STAGES = (
+    ("python", "Python basics", "Python", "Write and change short Python programs in the browser."),
+    ("pico", "Pico 2 electronics", "Pico 2", "Control LEDs, buttons, dials and a buzzer with a Raspberry Pi Pico 2."),
+    ("buggy", "Wheeled buggy", "Buggy", "Optional: build and program a small robot buggy."),
+    ("pidog", "PiDog V2", "PiDog", "Build and program the SunFounder PiDog V2 with a Raspberry Pi 5."),
 )
 SESSION_NAME = re.compile(r"week-(\d+)-session-([ab])\.md$")
 MARKDOWN_LINK = re.compile(r"(?<!!)\]\(([^)]+)\)")
 
 
-def session_id(path: Path) -> str:
+def session_key(path: Path) -> str:
+    """Progress key prefix. Keep it stable so saved ticks survive layout changes."""
     match = SESSION_NAME.fullmatch(path.name)
     if match is None:
         raise ValueError(f"Unexpected session filename: {path}")
     return f"session-{path.parent.name}-{int(match.group(1)):02d}-{match.group(2)}"
 
 
-def rewrite_local_links(text: str, source: Path, anchors: dict[Path, str]) -> str:
+def out_path(source: Path) -> Path:
+    """Output file (relative to OUT) for a markdown source file."""
+    source = source.resolve()
+    if source == INDEX.resolve():
+        return Path("index.html")
+    return Path(source.parent.name) / source.with_suffix(".html").name
+
+
+def relative_href(from_page: Path, to_page: Path) -> str:
+    return os.path.relpath(to_page, from_page.parent).replace(os.sep, "/")
+
+
+def rewrite_links(text: str, source: Path, page: Path, known: set[Path]) -> str:
     def replace(match: re.Match[str]) -> str:
         target = match.group(1)
         if target.startswith(("https://", "http://", "mailto:", "#")):
             return match.group(0)
         file_part, _, fragment = target.partition("#")
         destination = (source.parent / file_part).resolve()
-        if destination == INDEX.resolve():
-            anchor = fragment or "top"
-        elif destination in anchors:
-            anchor = anchors[destination]
-        else:
+        if destination not in known:
             raise ValueError(f"Unresolved link in {source.name}: {target}")
-        return f"](" + f"#{anchor}" + ")"
+        href = relative_href(page, out_path(destination))
+        return "](" + href + (f"#{fragment}" if fragment else "") + ")"
 
     return MARKDOWN_LINK.sub(replace, text)
 
 
-def session_markdown(path: Path, anchor: str, anchors: dict[Path, str]) -> str:
-    text = rewrite_local_links(path.read_text(encoding="utf-8"), path, anchors)
-    lines = text.splitlines()
-    if not lines or not lines[0].startswith("# "):
-        raise ValueError(f"Missing session heading: {path}")
-    lines[0] = "### " + lines[0][2:]
-    for number, line in enumerate(lines[1:], start=1):
-        if line.startswith("## "):
-            lines[number] = "#### " + line[3:]
-    return "\n".join(
-        (
-            f'::: {{#{anchor} .session-card data-route="{path.parent.name}"}}',
-            *lines,
-            "",
-            "[Back to session map](#session-map)",
-            ":::",
-        )
-    )
-
-
-def build_markdown() -> tuple[str, int]:
-    paths: dict[str, list[Path]] = {
-        route: sorted((ROOT / "sessions" / route).glob("week-*-session-*.md"))
-        for route, _ in ROUTES
-    }
-    all_sessions = [path for route, _ in ROUTES for path in paths[route]]
-    if len(all_sessions) != 60:
-        raise ValueError(f"Expected 60 session files, found {len(all_sessions)}")
-    anchors = {path.resolve(): session_id(path) for path in all_sessions}
-
-    parts = [
-        rewrite_local_links(INDEX.read_text(encoding="utf-8"), INDEX, anchors),
-        "# Session guides {#session-guides}",
-        "Use the session map above to jump to a lesson. The filter and search controls "
-        "below help you find sessions; the complete guide remains available for printing.",
-    ]
-    for route, label in ROUTES:
-        parts.append(f"## {label} {{#{route}-sessions}}")
-        parts.extend(session_markdown(path, anchors[path.resolve()], anchors) for path in paths[route])
-    return "\n\n".join(parts) + "\n", len(all_sessions)
-
-
-def render_html(markdown: str) -> str:
+def render(markdown: str) -> str:
     result = subprocess.run(
         [
             "pandoc",
@@ -116,260 +93,163 @@ STYLE = """
   --paper: #fff;
   --background: #f3f7f6;
   --soft: #e7f4f1;
+  --done: #2f8a3b;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
 body {
   margin: 0;
   background: var(--background);
   color: var(--ink);
-  font: 16px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font: 17px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 a { color: #075d73; text-underline-offset: .15em; }
 a:hover { color: var(--accent-dark); }
-a:focus-visible, button:focus-visible, input:focus-visible {
-  outline: 3px solid #e6a638;
-  outline-offset: 3px;
-}
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid #e6a638; outline-offset: 3px; }
 .toolbar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: .75rem max(1rem, calc((100vw - 1100px) / 2));
-  color: white;
-  background: #153c48;
-  box-shadow: 0 3px 15px #153c4822;
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: .7rem max(1rem, calc((100vw - 960px) / 2));
+  color: white; background: #153c48; box-shadow: 0 3px 15px #153c4822;
 }
-.toolbar strong { font-size: .95rem; white-space: nowrap; }
-.toolbar nav { display: flex; flex-wrap: wrap; gap: .75rem; }
-.toolbar a { color: #f8ffff; font-size: .9rem; }
-main { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1.2rem 5rem; }
+.toolbar .brand { color: white; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.toolbar nav { display: flex; flex-wrap: wrap; gap: .9rem; }
+.toolbar nav a { color: #f8ffff; font-size: .92rem; }
+.toolbar nav a[aria-current="page"] { font-weight: 700; text-decoration-thickness: 2px; }
+main { max-width: 960px; margin: 0 auto; padding: 1.4rem 1.2rem 4rem; }
 h1, h2, h3, h4 { line-height: 1.25; scroll-margin-top: 5rem; }
-h1 { font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -.035em; }
-h2 { margin-top: 3rem; font-size: 1.65rem; }
-h3 { margin-top: 0; font-size: 1.28rem; }
-h4 { margin-bottom: .6rem; font-size: 1.06rem; color: var(--accent-dark); }
-p, li { max-width: 80ch; }
+h1 { font-size: clamp(1.8rem, 4.5vw, 2.6rem); letter-spacing: -.03em; margin-top: .4rem; }
+h2 { margin-top: 2.4rem; font-size: 1.5rem; }
+h3 { font-size: 1.2rem; }
+p, li { max-width: 75ch; }
 table {
-  display: block;
-  width: max-content;
-  max-width: 100%;
-  overflow-x: auto;
-  border-collapse: collapse;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: .6rem;
+  display: block; width: max-content; max-width: 100%; overflow-x: auto;
+  border-collapse: collapse; background: var(--paper);
+  border: 1px solid var(--line); border-radius: .6rem;
 }
 th, td { min-width: 8rem; padding: .55rem .7rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
-th { position: sticky; top: 0; background: var(--soft); }
+th { background: var(--soft); }
 tr:last-child td { border-bottom: none; }
 tr:has(td:first-child strong) { background: #eff7f5; }
 code { padding: .1em .25em; border-radius: .25em; background: #e9efef; }
 pre { overflow-x: auto; padding: 1rem; border-radius: .5rem; background: #e9efef; }
 pre code { padding: 0; }
-.session-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: .75rem;
-  margin: 1.5rem 0;
-  padding: 1rem;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: .75rem;
+.breadcrumb { margin: 0; color: var(--muted); font-size: .92rem; }
+.card {
+  margin: 1rem 0; padding: 1.2rem 1.4rem;
+  border: 1px solid var(--line); border-left: .4rem solid var(--accent); border-radius: .7rem;
+  background: var(--paper); box-shadow: 0 2px 9px #153c4808;
 }
-.session-controls label { font-weight: 650; }
-.session-controls input {
-  width: min(100%, 22rem);
-  padding: .55rem .7rem;
-  border: 1px solid #9eb8b8;
-  border-radius: .45rem;
-  font: inherit;
-}
-.route-buttons { display: flex; flex-wrap: wrap; gap: .4rem; }
-.route-buttons button {
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: .4rem .7rem;
-  background: white;
-  color: var(--ink);
-  cursor: pointer;
-  font: inherit;
-  font-size: .9rem;
-}
-.route-buttons button[aria-pressed="true"] { background: var(--accent); color: white; border-color: var(--accent); }
-#session-count { color: var(--muted); font-size: .9rem; }
-.session-card {
-  scroll-margin-top: 5rem;
-  margin: 1rem 0 1.5rem;
-  padding: 1.2rem 1.4rem;
-  border: 1px solid var(--line);
-  border-left: .4rem solid var(--accent);
-  border-radius: .7rem;
-  background: var(--paper);
-  box-shadow: 0 2px 9px #153c4808;
-}
-.session-card:target { outline: 3px solid #dfb34e; outline-offset: 3px; }
-.session-card[hidden] { display: none; }
-.session-card ul li { margin: .35rem 0; }
-.session-card input[type="checkbox"] { accent-color: var(--accent); width: 1.1rem; height: 1.1rem; cursor: pointer; }
+.card.is-done { border-left-color: var(--done); background: #f6fbf5; }
+.card ul li { margin: .35rem 0; }
+input[type="checkbox"] { accent-color: var(--accent); width: 1.15rem; height: 1.15rem; cursor: pointer; vertical-align: -.15em; }
 .done-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: .45rem;
-  margin: 0 0 .6rem;
-  padding: .3rem .7rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--soft);
-  font-weight: 650;
-  cursor: pointer;
+  display: inline-flex; align-items: center; gap: .45rem;
+  margin: .2rem 0 .4rem; padding: .35rem .8rem;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--soft);
+  font-weight: 650; cursor: pointer;
 }
-.session-card.is-done { border-left-color: #3f9b4b; background: #f6fbf5; }
-.session-card.is-done .done-toggle { background: #d9f0d6; border-color: #9fd19a; }
-a.map-done::after { content: " ✓"; color: #2f8a3b; font-weight: 700; }
-.progress-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; width: 100%; }
-.progress-bar strong { margin-right: .5rem; }
-.progress-bar button {
-  border: 1px solid #9eb8b8;
-  border-radius: .45rem;
-  padding: .35rem .65rem;
-  background: white;
-  color: var(--ink);
-  cursor: pointer;
-  font: inherit;
-  font-size: .9rem;
+.card.is-done .done-toggle { background: #d9f0d6; border-color: #9fd19a; }
+a.map-done::after { content: " ✓"; color: var(--done); font-weight: 700; }
+.stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: .8rem; margin: 1rem 0; }
+.stage-grid a {
+  display: block; padding: 1rem; border: 1px solid var(--line); border-radius: .7rem;
+  background: var(--paper); color: var(--ink); text-decoration: none;
+}
+.stage-grid a:hover { border-color: var(--accent); }
+.stage-grid strong { display: block; color: var(--accent-dark); font-size: 1.05rem; }
+.stage-grid span { color: var(--muted); font-size: .9rem; }
+.stage-progress { display: block; margin-top: .4rem; color: var(--done); font-weight: 650; font-size: .88rem; }
+.stage-grid .stage-progress { color: var(--done); }
+.pager { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem; }
+.pager a {
+  flex: 1; max-width: 48%; padding: .8rem 1rem; border: 1px solid var(--line); border-radius: .6rem;
+  background: var(--paper); text-decoration: none;
+}
+.pager a small { display: block; color: var(--muted); }
+.pager .next { text-align: right; margin-left: auto; }
+.progress-box { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 1rem 0; padding: .9rem 1rem;
+  background: var(--paper); border: 1px solid var(--line); border-radius: .7rem; }
+.progress-box strong { margin-right: .5rem; }
+.progress-box button {
+  border: 1px solid #9eb8b8; border-radius: .45rem; padding: .35rem .65rem;
+  background: white; color: var(--ink); cursor: pointer; font: inherit; font-size: .9rem;
 }
 .progress-note { color: var(--muted); font-size: .85rem; }
 @media (max-width: 700px) {
   .toolbar { align-items: flex-start; flex-direction: column; gap: .35rem; }
   main { padding: 1rem .8rem 3rem; }
-  .session-card { padding: 1rem; }
+  .card { padding: 1rem; }
+  .pager { flex-direction: column; }
+  .pager a { max-width: none; }
 }
 @media print {
   body { background: white; font-size: 11pt; }
-  .toolbar, .session-controls, .done-toggle { display: none !important; }
+  .toolbar, .progress-box, .done-toggle, .pager { display: none !important; }
   main { max-width: none; padding: 0; }
-  .session-card, .session-card[hidden] {
-    display: block !important;
-    break-inside: avoid;
-    box-shadow: none;
-    border-color: #bbb;
-  }
+  .card { box-shadow: none; border-color: #bbb; }
   a { color: inherit; }
-  h1, h2, h3, h4 { break-after: avoid; }
 }
 """
 
 
-SCRIPT = """
+SCRIPT = r"""
 (() => {
-  const search = document.getElementById("session-search");
-  const buttons = [...document.querySelectorAll(".route-buttons button")];
-  const cards = [...document.querySelectorAll(".session-card")];
-  const count = document.getElementById("session-count");
-  let route = "all";
-
-  function applyFilters() {
-    const query = search.value.trim().toLocaleLowerCase();
-    let shown = 0;
-    for (const card of cards) {
-      const routeMatches = route === "all" || card.dataset.route === route;
-      const textMatches = !query || card.textContent.toLocaleLowerCase().includes(query);
-      card.hidden = !(routeMatches && textMatches);
-      if (!card.hidden) shown++;
-    }
-    count.textContent = `${shown} of ${cards.length} sessions shown`;
-  }
-
-  function selectRoute(next) {
-    route = next;
-    for (const button of buttons) {
-      button.setAttribute("aria-pressed", String(button.dataset.route === route));
-    }
-    applyFilters();
-  }
-
-  for (const button of buttons) {
-    button.addEventListener("click", () => selectRoute(button.dataset.route));
-  }
-  search.addEventListener("input", applyFilters);
-
-  function revealHash() {
-    const id = decodeURIComponent(location.hash.slice(1));
-    const target = document.getElementById(id);
-    if (target && target.classList.contains("session-card") && target.hidden) {
-      search.value = "";
-      selectRoute("all");
-      requestAnimationFrame(() => target.scrollIntoView());
-    }
-  }
-  window.addEventListener("hashchange", revealHash);
-  revealHash();
-  applyFilters();
-
-  // Progress: ticks are kept in this browser's localStorage. No server is used.
+  // Progress is kept in this browser's localStorage. No server is used.
   const STORE_KEY = "au-kids-learn-coding:progress:v1";
+  const SESSION_HREF = /\/(python|pico|buggy|pidog)\/week-(\d+)-session-([ab])\.html$/;
   const note = document.getElementById("progress-note");
-  const progressCount = document.getElementById("progress-count");
   let progress = {};
   let storageOk = true;
+  const warn = () => { if (note) note.textContent = "This browser cannot save ticks. Use “Save progress to a file”."; };
   try {
     const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
     if (saved && typeof saved === "object" && !Array.isArray(saved)) progress = saved;
-  } catch (error) {
-    storageOk = false;
-    note.textContent = "This browser cannot save ticks. Use “Save progress to a file”.";
-  }
-
+  } catch (error) { storageOk = false; warn(); }
   function save() {
     if (!storageOk) return;
-    try {
-      localStorage.setItem(STORE_KEY, JSON.stringify(progress));
-    } catch (error) {
-      storageOk = false;
-      note.textContent = "This browser cannot save ticks. Use “Save progress to a file”.";
-    }
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(progress)); } catch (error) { storageOk = false; warn(); }
   }
 
   const boxes = [];
-  for (const card of cards) {
-    const heading = card.querySelector("h3");
+  const card = document.querySelector(".card[data-session]");
+  if (card) {
+    const id = card.dataset.session;
     const toggle = document.createElement("label");
     toggle.className = "done-toggle";
     const doneBox = document.createElement("input");
     doneBox.type = "checkbox";
-    doneBox.dataset.key = `${card.id}:done`;
-    doneBox.dataset.done = card.id;
+    doneBox.dataset.key = `${id}:done`;
     toggle.append(doneBox, document.createTextNode(" Session done"));
-    heading.after(toggle);
+    card.querySelector("h1").after(toggle);
     boxes.push(doneBox);
     card.querySelectorAll('ul input[type="checkbox"]').forEach((box, index) => {
       box.disabled = false;
       box.removeAttribute("disabled");
-      box.dataset.key = `${card.id}:item-${index}`;
+      box.dataset.key = `${id}:item-${index}`;
       boxes.push(box);
     });
   }
-  const mapLinks = [...document.querySelectorAll('a[href^="#session-"]')]
-    .filter((link) => !link.closest(".session-card"));
+
+  const sessionLinks = [];
+  for (const link of document.querySelectorAll("main a[href]")) {
+    const match = new URL(link.href, location.href).pathname.match(SESSION_HREF);
+    if (match && !link.closest(".pager")) {
+      sessionLinks.push([link, `session-${match[1]}-${match[2].padStart(2, "0")}-${match[3]}`]);
+    }
+  }
+
+  const doneKeys = () => Object.keys(progress).filter((k) => k.endsWith(":done"));
 
   function render() {
-    let done = 0;
     for (const box of boxes) box.checked = progress[box.dataset.key] === true;
-    for (const card of cards) {
-      const isDone = progress[`${card.id}:done`] === true;
-      card.classList.toggle("is-done", isDone);
-      if (isDone) done++;
+    if (card) card.classList.toggle("is-done", progress[`${card.dataset.session}:done`] === true);
+    for (const [link, id] of sessionLinks) link.classList.toggle("map-done", progress[`${id}:done`] === true);
+    for (const el of document.querySelectorAll("[data-stage-progress]")) {
+      const done = doneKeys().filter((k) => k.startsWith(`session-${el.dataset.stageProgress}-`)).length;
+      el.textContent = done ? `${done} of ${el.dataset.total} done` : "";
     }
-    for (const link of mapLinks) {
-      link.classList.toggle("map-done", progress[`${link.hash.slice(1)}:done`] === true);
-    }
-    progressCount.textContent = `${done} of ${cards.length} sessions done`;
+    const count = document.getElementById("progress-count");
+    if (count) count.textContent = `${doneKeys().length} of ${count.dataset.total} sessions done`;
   }
 
   for (const box of boxes) {
@@ -381,118 +261,195 @@ SCRIPT = """
     });
   }
 
-  document.getElementById("progress-export").addEventListener("click", () => {
-    const blob = new Blob([JSON.stringify({ app: "au-kids-learn-coding", version: 1, progress }, null, 2)],
-      { type: "application/json" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `coding-progress-${new Date().toISOString().slice(0, 10)}.json`;
-    link.click();
-    URL.revokeObjectURL(link.href);
-  });
-
-  const fileInput = document.getElementById("progress-file");
-  document.getElementById("progress-import").addEventListener("click", () => fileInput.click());
-  fileInput.addEventListener("change", async () => {
-    const file = fileInput.files[0];
-    fileInput.value = "";
-    if (!file) return;
-    try {
-      const data = JSON.parse(await file.text());
-      if (data.app !== "au-kids-learn-coding" || typeof data.progress !== "object" || Array.isArray(data.progress)) {
-        throw new Error("not a progress file");
+  const exportButton = document.getElementById("progress-export");
+  if (exportButton) {
+    exportButton.addEventListener("click", () => {
+      const blob = new Blob([JSON.stringify({ app: "au-kids-learn-coding", version: 1, progress }, null, 2)],
+        { type: "application/json" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `coding-progress-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+    const fileInput = document.getElementById("progress-file");
+    document.getElementById("progress-import").addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files[0];
+      fileInput.value = "";
+      if (!file) return;
+      try {
+        const data = JSON.parse(await file.text());
+        if (data.app !== "au-kids-learn-coding" || typeof data.progress !== "object" || Array.isArray(data.progress)) {
+          throw new Error("not a progress file");
+        }
+        const next = {};
+        for (const [key, value] of Object.entries(data.progress)) {
+          if (value === true && /^session-(python|pico|buggy|pidog)-\d{2}-[ab]:(done|item-\d+)$/.test(key)) next[key] = true;
+        }
+        progress = next;
+        save();
+        render();
+        note.textContent = `Loaded ${Object.keys(next).length} ticks from ${file.name}.`;
+      } catch (error) {
+        note.textContent = "That file is not a progress file from this site.";
       }
-      const known = new Set(boxes.map((box) => box.dataset.key));
-      const next = {};
-      for (const [key, value] of Object.entries(data.progress)) {
-        if (value === true && known.has(key)) next[key] = true;
-      }
-      progress = next;
+    });
+    document.getElementById("progress-reset").addEventListener("click", () => {
+      if (!confirm("Clear all ticks in this browser? Save a file first if you want a copy.")) return;
+      progress = {};
       save();
       render();
-      note.textContent = `Loaded ${Object.keys(next).length} ticks from ${file.name}.`;
-    } catch (error) {
-      note.textContent = "That file is not a progress file from this site.";
-    }
-  });
-
-  document.getElementById("progress-reset").addEventListener("click", () => {
-    if (!confirm("Clear all ticks in this browser? Save a file first if you want a copy.")) return;
-    progress = {};
-    save();
-    render();
-  });
+    });
+  }
 
   render();
 })();
 """
 
 
-def page(body: str, session_count: int) -> str:
-    controls = """
-<div class="session-controls" role="search" aria-label="Find a session">
-  <label for="session-search">Find a session</label>
-  <input id="session-search" type="search" placeholder="Try “servo”, “LED”, or “order”">
-  <div class="route-buttons" aria-label="Filter by stage">
-    <button type="button" data-route="all" aria-pressed="true">All</button>
-    <button type="button" data-route="python" aria-pressed="false">Python</button>
-    <button type="button" data-route="pico" aria-pressed="false">Pico 2</button>
-    <button type="button" data-route="buggy" aria-pressed="false">Buggy</button>
-    <button type="button" data-route="pidog" aria-pressed="false">PiDog</button>
-  </div>
-  <span id="session-count"></span>
-  <div class="progress-bar" aria-label="Progress">
-    <strong id="progress-count"></strong>
-    <button type="button" id="progress-export">Save progress to a file</button>
-    <button type="button" id="progress-import">Load progress from a file</button>
-    <button type="button" id="progress-reset">Clear progress</button>
-    <input type="file" id="progress-file" accept="application/json,.json" hidden>
-    <span class="progress-note" id="progress-note">Ticks are saved in this browser only.</span>
-  </div>
-</div>"""
-    marker = '<section id="session-guides"'
-    if marker in body:
-        # Pandoc wraps a heading with its section only when --section-divs is used.
-        raise ValueError("Unexpected Pandoc section wrapper")
-    heading = '<h1 id="session-guides">Session guides</h1>'
-    if heading not in body:
-        raise ValueError("Session guide heading was not rendered")
-    body = body.replace(heading, heading + controls, 1)
-    title = "Python and robotics — parent-led curriculum"
+def page(page_path: Path, title: str, body: str, current: str = "") -> str:
+    def href(target: str) -> str:
+        return relative_href(page_path, Path(target))
+
+    links = [("index.html", "Home", "home")] + [(f"{key}/index.html", nav_label, key) for key, _, nav_label, _ in STAGES]
+    nav = "\n".join(
+        f'      <a href="{href(target)}"' + (' aria-current="page"' if key == current else "") + f">{html.escape(label)}</a>"
+        for target, label, key in links
+    )
+    nav += f'\n      <a href="{href("index.html")}#shopping-list">Shopping list</a>'
+    full_title = title if title == TITLE else f"{title} · {TITLE}"
     return f"""<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>{html.escape(title)}</title>
-  <style>{STYLE}</style>
+  <title>{html.escape(full_title)}</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A4%96%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="{href('style.css')}">
 </head>
-<body id="top">
+<body>
   <header class="toolbar">
-    <strong>Python &amp; robotics · {session_count} sessions</strong>
-    <nav aria-label="Page">
-      <a href="#top">Overview</a>
-      <a href="#session-map">Session map</a>
-      <a href="#shopping-list">Shopping list</a>
-      <a href="#session-guides">Session guides</a>
+    <a class="brand" href="{href('index.html')}">{html.escape(TITLE)}</a>
+    <nav aria-label="Site">
+{nav}
     </nav>
   </header>
   <main>
 {body}
   </main>
-  <script>{SCRIPT}</script>
+  <script src="{href('progress.js')}"></script>
 </body>
 </html>
 """
 
 
+def session_title(path: Path) -> str:
+    first = path.read_text(encoding="utf-8").splitlines()[0]
+    if not first.startswith("# "):
+        raise ValueError(f"Missing session heading: {path}")
+    return first[2:].strip()
+
+
+def short_title(path: Path) -> str:
+    """'Week 1, Session A: Hello world emoji' -> 'Hello world emoji'."""
+    return session_title(path).split(":", 1)[-1].strip()
+
+
+def write(rel: Path, content: str) -> None:
+    target = OUT / rel
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(content, encoding="utf-8")
+
+
+def stage_page_body(key: str, label: str, blurb: str, paths: list[Path]) -> str:
+    rows: dict[int, dict[str, Path]] = {}
+    for path in paths:
+        match = SESSION_NAME.fullmatch(path.name)
+        rows.setdefault(int(match.group(1)), {})[match.group(2)] = path
+    table = ["<table>", "<thead><tr><th>Week</th><th>Session A</th><th>Session B</th></tr></thead>", "<tbody>"]
+    for week in sorted(rows):
+        cells = []
+        for part in "ab":
+            path = rows[week].get(part)
+            cells.append(f'<td><a href="{out_path(path).name}">{html.escape(short_title(path))}</a></td>' if path else "<td></td>")
+        table.append(f"<tr><td>{week}</td>{''.join(cells)}</tr>")
+    table += ["</tbody>", "</table>"]
+    note = (
+        "<p>If you do both robots, finish the buggy first, then use these PiDog weeks as calendar Weeks 21–30.</p>\n"
+        if key == "pidog" else ""
+    )
+    return (
+        f'<p class="breadcrumb"><a href="../index.html">Home</a> › {html.escape(label)}</p>\n'
+        f"<h1>{html.escape(label)}</h1>\n<p>{html.escape(blurb)}</p>\n{note}"
+        f'<p class="stage-progress" data-stage-progress="{key}" data-total="{len(paths)}"></p>\n'
+        + "\n".join(table)
+    )
+
+
+def pager(paths: list[Path], index: int, label: str) -> str:
+    parts = ['<nav class="pager" aria-label="Previous and next session">']
+    if index > 0:
+        prev = paths[index - 1]
+        parts.append(f'<a class="prev" href="{out_path(prev).name}"><small>← Previous</small>{html.escape(session_title(prev))}</a>')
+    else:
+        parts.append(f'<a class="prev" href="index.html"><small>← Back to</small>{html.escape(label)}</a>')
+    if index + 1 < len(paths):
+        nxt = paths[index + 1]
+        parts.append(f'<a class="next" href="{out_path(nxt).name}"><small>Next →</small>{html.escape(session_title(nxt))}</a>')
+    else:
+        parts.append('<a class="next" href="../index.html#session-map"><small>Next →</small>Choose the next stage</a>')
+    parts.append("</nav>")
+    return "\n".join(parts)
+
+
 def main() -> None:
-    markdown, count = build_markdown()
-    body = render_html(markdown)
-    output = page(body, count)
-    OUTPUT.write_text(output, encoding="utf-8")
-    print(f"Wrote {OUTPUT} ({count} sessions)")
+    sessions = {key: sorted((ROOT / "sessions" / key).glob("week-*-session-*.md")) for key, _, _, _ in STAGES}
+    all_sessions = [p for key, _, _, _ in STAGES for p in sessions[key]]
+    if len(all_sessions) != 60:
+        raise ValueError(f"Expected 60 session files, found {len(all_sessions)}")
+    known = {p.resolve() for p in all_sessions} | {INDEX.resolve()}
+
+    write(Path("style.css"), STYLE.lstrip())
+    write(Path("progress.js"), SCRIPT.lstrip())
+
+    # Home page: overview, stage cards, progress controls.
+    home = Path("index.html")
+    overview = render(rewrite_links(INDEX.read_text(encoding="utf-8"), INDEX, home, known))
+    grid = "\n".join(
+        f'<a href="{key}/index.html"><strong>{html.escape(label)}</strong><span>{html.escape(blurb)}</span>'
+        f'<span class="stage-progress" data-stage-progress="{key}" data-total="{len(sessions[key])}"></span></a>'
+        for key, label, _, blurb in STAGES
+    )
+    progress_box = f"""
+<div class="progress-box" aria-label="Progress">
+  <strong id="progress-count" data-total="{len(all_sessions)}"></strong>
+  <button type="button" id="progress-export">Save progress to a file</button>
+  <button type="button" id="progress-import">Load progress from a file</button>
+  <button type="button" id="progress-reset">Clear progress</button>
+  <input type="file" id="progress-file" accept="application/json,.json" hidden>
+  <span class="progress-note" id="progress-note">Ticks are saved in this browser only.</span>
+</div>"""
+    heading_end = overview.index("</h1>") + len("</h1>")
+    overview = overview[:heading_end] + f'\n<div class="stage-grid">\n{grid}\n</div>' + progress_box + overview[heading_end:]
+    write(home, page(home, TITLE, overview, "home"))
+
+    for key, label, _, blurb in STAGES:
+        paths = sessions[key]
+        stage_page = Path(key) / "index.html"
+        write(stage_page, page(stage_page, label, stage_page_body(key, label, blurb, paths), key))
+        for index, path in enumerate(paths):
+            rel = out_path(path)
+            content = render(rewrite_links(path.read_text(encoding="utf-8"), path, rel, known))
+            body = (
+                f'<p class="breadcrumb"><a href="../index.html">Home</a> › <a href="index.html">{html.escape(label)}</a></p>\n'
+                f'<article class="card" data-session="{session_key(path)}">\n{content}</article>\n'
+                + pager(paths, index, label)
+            )
+            write(rel, page(rel, session_title(path), body, key))
+
+    print(f"Wrote {OUT}: home page, {len(STAGES)} stage pages, {len(all_sessions)} session pages")
 
 
 if __name__ == "__main__":
