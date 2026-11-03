@@ -1,35 +1,34 @@
-# Week 10, Session B: Mood indicator
+# Week 10 Homework: Mood indicator upgrade
 
 **Route:** Pico  
-**Time:** About 60 minutes. You may split it across days.  
-**Lesson:** Open [Mood indicator](https://projects.raspberrypi.org/en/projects/mood-indicator) (part of Introduction to Raspberry Pi Pico). Use its circuit diagram for every connection.
+**Type:** Homework. He works on his own. A parent checks the result at the end (5–10 minutes).  
+**Time:** About 15–30 minutes, on any day before the next session.  
+**Lesson:** Open the [Mood indicator “Upgrade your project” step](https://projects.raspberrypi.org/en/projects/mood-indicator/6). It is the last step of the project from Session A.
 
 ## Before starting
 
-- [ ] Complete the [previous session](../pico/week-10-session-a.md), or repeat it if the checkpoint was difficult.
-- [ ] Have ready: Pico setup, RGB LED of the project type, required resistors, breadboard and wires.
-- [ ] Parent preparation: Open the saved code. This session is the ordering checkpoint for the next stage.
+- [ ] Finish [Session A](../pico/week-10-session-a.md) first.
+- [ ] Open the saved project from Session A.
+- [ ] Ask a parent before changing any wires. Unplug the Pico first.
 
-## During the session
+## Homework
 
-1. **Recall (5 min):** Look at what you made in Session A and ask what should happen next.
-2. **Build or change (40 min):** Make three named moods and choose a colour for each. Before the end, choose the next route and complete its order check below.
-3. **Check (10 min):** Run, demonstrate or inspect the result. Ask what changed and what stayed the same.
-4. **Record (5 min):** Write or draw the result and one idea for next time.
+- [ ] Make three named moods, each with its own colour.
+- [ ] Test it in a real situation, as the Upgrade page suggests, and ask one family member what they think.
 
-## Order now for the route you chose
+If stuck: unplug the Pico, compare every wire with the project diagram, and run the last working code. Then ask a parent.
 
-- [ ] **Buggy first:** Buy the [Kitronik 5335 at Core Electronics](https://core-electronics.com.au/kitronik-autonomous-robotics-platform-for-pico-single-single-1.html) or [Pi Australia](https://piaustralia.com.au/products/kitronik-autonomous-robotics-platform-for-pico), plus four alkaline AA batteries. Confirm Pico 2 compatibility with the seller. Check stock before ordering.
-- [ ] **PiDog directly:** Confirm the [PiDog **V2** order from SunFounder](https://www.sunfounder.com/products/sunfounder-pidog-robot-dog-kit-for-raspberry-pi) from Week 9, or place it now. Add a Raspberry Pi **5**, 32 GB or larger microSD card and official Raspberry Pi **27 W** USB-C desk supply from the Australian buying options below. Check whether you need a microSD reader.
-- [ ] **Both robots:** Order only the buggy parts now. PiDog has an early order reminder in buggy Week 17, Session B.
+## Parent check
 
-See the [shopping list](../../11_year_old_robotics_python_curriculum.md#shopping-list) for part details.
+Ask him to show the three moods and name the code line for one colour.
 
-## Finished when
+## Parent: order for the next stage
 
-He demonstrates three moods. The order for the chosen Week 13 route is placed or the required parts are already on hand. If this takes longer, stop at a working point and continue next time.
+Choose the next route now and order its parts. See the [shopping list](../../11_year_old_robotics_python_curriculum.md#shopping-list).
 
-If stuck: Unplug before changing wires. Compare every connection with the project diagram, then run the last working code.
+- [ ] **Buggy first:** order the Kitronik Autonomous Robotics Platform and four AA batteries.
+- [ ] **PiDog directly:** confirm or place the PiDog **V2** order, and order the Raspberry Pi 5 parts.
+- [ ] **Both robots:** order only the buggy parts now. Buggy Week 17 reminds you to order PiDog.
 
 ## Next
 

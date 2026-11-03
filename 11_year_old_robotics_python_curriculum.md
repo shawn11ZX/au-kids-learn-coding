@@ -1,6 +1,6 @@
 # Python and robotics: a parent-led plan
 
-For an 11-year-old learning with a parent who has a little tech experience. The goal is to write Python, control simple electronics, build a wheeled buggy if he wants to, and eventually program a **SunFounder PiDog V2 with Raspberry Pi 5**. The pace is **two sessions each week**: Session A (about 45 minutes) introduces an idea; Session B (about 60 minutes) lets him change and test it. Repeat or split any session when needed.
+For an 11-year-old learning with a parent who has a little tech experience. The goal is to write Python, control simple electronics, build a wheeled buggy if he wants to, and eventually program a **SunFounder PiDog V2 with Raspberry Pi 5**. Each week has two parts. **Python and Pico:** Session A (about 45 minutes) works through one Raspberry Pi project together; the **homework** (15–30 minutes) is that project's own Challenge or Upgrade step, which he does on his own. **Buggy and PiDog:** Session A and Session B are both guided sessions. Repeat or split any session when needed.
 
 ## Start here
 
@@ -10,26 +10,26 @@ For an 11-year-old learning with a parent who has a little tech experience. The 
 4. At the end, use the **Finished when** check. If it is difficult, repeat the session or make the task smaller. The week numbers are a guide.
 5. Place orders when the session says to. The [shopping list](#shopping-list) gives the parts for each stage. Check deliveries before the first session that uses them.
 
-If you have one hour a week, do Session A one week and Session B the next. You can stop after the Pico stage, take the buggy route, go directly to PiDog, or do both robots. **Doing both:** finish buggy Week 20, then use the PiDog files labelled Weeks 13–22 as your calendar Weeks 21–30.
+If you have less time, do the homework on a different day from Session A, or skip it. You can stop after the Pico stage, take the buggy route, go directly to PiDog, or do both robots. **Doing both:** finish buggy Week 20, then use the PiDog files labelled Weeks 13–22 as your calendar Weeks 21–30.
 
 ## Session map
 
-| Week | Session A | Session B |
+| Week | Session A | Session B or homework |
 | --- | --- | --- |
 | **Python** | | |
-| 1 | [Hello world emoji](sessions/python/week-01-session-a.md) | [Robot moods](sessions/python/week-01-session-b.md) |
-| 2 | [Target practice](sessions/python/week-02-session-a.md) | [Change the scoring](sessions/python/week-02-session-b.md) |
-| 3 | [Rocket launch](sessions/python/week-03-session-a.md) | [New countdown](sessions/python/week-03-session-b.md) |
-| 4 | [Make a face](sessions/python/week-04-session-a.md) | [New expression](sessions/python/week-04-session-b.md) |
-| 5 | [Don’t collide! · order Pico parts](sessions/python/week-05-session-a.md) | [Test a game change](sessions/python/week-05-session-b.md) |
-| 6 | [Powerful patterns](sessions/python/week-06-session-a.md) | [Finish and explain](sessions/python/week-06-session-b.md) |
+| 1 | [Hello world emoji](sessions/python/week-01-session-a.md) | [Homework: Hello world challenge](sessions/python/week-01-session-b.md) |
+| 2 | [Target practice](sessions/python/week-02-session-a.md) | [Homework: Target practice challenge](sessions/python/week-02-session-b.md) |
+| 3 | [Rocket launch](sessions/python/week-03-session-a.md) | [Homework: Rocket launch challenge](sessions/python/week-03-session-b.md) |
+| 4 | [Make a face](sessions/python/week-04-session-a.md) | [Homework: Make a face challenge](sessions/python/week-04-session-b.md) |
+| 5 | [Don’t collide! · order Pico parts](sessions/python/week-05-session-a.md) | [Homework: Don’t collide! challenge](sessions/python/week-05-session-b.md) |
+| 6 | [Powerful patterns](sessions/python/week-06-session-a.md) | [Homework: Powerful patterns challenge](sessions/python/week-06-session-b.md) |
 | **Pico 2 electronics** | | |
-| 7 | [LED firefly](sessions/pico/week-07-session-a.md) | [New flash pattern](sessions/pico/week-07-session-b.md) |
-| 8 | [Party popper](sessions/pico/week-08-session-a.md) | [New trigger response](sessions/pico/week-08-session-b.md) |
-| 9 | [Beating heart](sessions/pico/week-09-session-a.md) | [Test dial settings · early PiDog order if direct](sessions/pico/week-09-session-b.md) |
-| 10 | [Mood indicator](sessions/pico/week-10-session-a.md) | [Three moods · order next robot](sessions/pico/week-10-session-b.md) |
-| 11 | [Sound machine](sessions/pico/week-11-session-a.md) | [Make a sound pattern](sessions/pico/week-11-session-b.md) |
-| 12 | [Sensory gadget](sessions/pico/week-12-session-a.md) | [Invent a behaviour](sessions/pico/week-12-session-b.md) |
+| 7 | [LED firefly](sessions/pico/week-07-session-a.md) | [Homework: LED firefly upgrade](sessions/pico/week-07-session-b.md) |
+| 8 | [Party popper](sessions/pico/week-08-session-a.md) | [Homework: Party popper upgrade](sessions/pico/week-08-session-b.md) |
+| 9 | [Beating heart](sessions/pico/week-09-session-a.md) | [Homework: Beating heart upgrade · early PiDog order if direct](sessions/pico/week-09-session-b.md) |
+| 10 | [Mood indicator](sessions/pico/week-10-session-a.md) | [Homework: Mood indicator upgrade · order next robot](sessions/pico/week-10-session-b.md) |
+| 11 | [Sound machine](sessions/pico/week-11-session-a.md) | [Homework: Sound machine upgrade](sessions/pico/week-11-session-b.md) |
+| 12 | [Sensory gadget](sessions/pico/week-12-session-a.md) | [Homework: Sensory gadget upgrade](sessions/pico/week-12-session-b.md) |
 | **Optional wheeled buggy** | | |
 | 13 | [Inputs and outputs](sessions/buggy/week-13-session-a.md) | [Start/stop signal](sessions/buggy/week-13-session-b.md) |
 | 14 | [Working with motors](sessions/buggy/week-14-session-a.md) | [Forward, stop, reverse](sessions/buggy/week-14-session-b.md) |
@@ -68,7 +68,7 @@ Buy each stage only when you reach it. Prices are in AUD and were checked on **3
 - Use the kit's **passive** buzzer, not the active one.
 - Power the Pico from USB. Do not use the kit's breadboard power supply or 40-pin GPIO board; they are for a full Raspberry Pi.
 
-### 2. Wheeled buggy (optional): order in [Pico Week 10, Session B](sessions/pico/week-10-session-b.md)
+### 2. Wheeled buggy (optional): order in [Homework: Mood indicator upgrade · order next robot](sessions/pico/week-10-session-b.md)
 
 | Buy | Store | Price |
 | --- | --- | --- |
@@ -77,7 +77,7 @@ Buy each stage only when you reach it. Prices are in AUD and were checked on **3
 
 - Kitronik's examples target the original Pico. If the Pico 2 does not work, buy a [Pico H](https://piaustralia.com.au/products/raspberry-pi-pico-h) ($7.80).
 
-### 3. PiDog V2: order in [Pico Week 9, Session B](sessions/pico/week-09-session-b.md) (straight to PiDog) or [buggy Week 17, Session B](sessions/buggy/week-17-session-b.md) (doing both)
+### 3. PiDog V2: order in [Homework: Beating heart upgrade · early PiDog order if direct](sessions/pico/week-09-session-b.md) (straight to PiDog) or [buggy Week 17, Session B](sessions/buggy/week-17-session-b.md) (doing both)
 
 | Buy | Store | Price |
 | --- | --- | --- |

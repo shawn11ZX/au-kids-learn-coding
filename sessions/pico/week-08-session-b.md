@@ -1,27 +1,26 @@
-# Week 8, Session B: Party popper
+# Week 8 Homework: Party popper upgrade
 
 **Route:** Pico  
-**Time:** About 60 minutes. You may split it across days.  
-**Lesson:** Open [Party popper](https://projects.raspberrypi.org/en/projects/party-popper) (part of Introduction to Raspberry Pi Pico). Use its circuit diagram for every connection.
+**Type:** Homework. He works on his own. A parent checks the result at the end (5–10 minutes).  
+**Time:** About 15–30 minutes, on any day before the next session.  
+**Lesson:** Open the [Party popper “Upgrade your project” step](https://projects.raspberrypi.org/en/projects/party-popper/6). It is the last step of the project from Session A.
 
 ## Before starting
 
-- [ ] Complete the [previous session](../pico/week-08-session-a.md), or repeat it if the checkpoint was difficult.
-- [ ] Have ready: Pico setup, breadboard, button or switch, LED, passive piezo if the project calls for it, resistors and wires from the project diagram.
-- [ ] Parent preparation: Restore the last working code and unplug the Pico before rewiring.
+- [ ] Finish [Session A](../pico/week-08-session-a.md) first.
+- [ ] Open the saved project from Session A.
+- [ ] Ask a parent before changing any wires. Unplug the Pico first.
 
-## During the session
+## Homework
 
-1. **Recall (5 min):** Look at what you made in Session A and ask what should happen next.
-2. **Build or change (40 min):** Let him change the response to a second press or make a different light/sound pattern. Draw input → decision → output.
-3. **Check (10 min):** Run, demonstrate or inspect the result. Ask what changed and what stayed the same.
-4. **Record (5 min):** Write or draw the result and one idea for next time.
+- [ ] Program a longer sequence of light changes and sounds.
+- [ ] Draw input → decision → output for his party popper.
 
-## Finished when
+If stuck: unplug the Pico, compare every wire with the project diagram, and run the last working code. Then ask a parent.
 
-He demonstrates the trigger and explains the arrow diagram. If this takes longer, stop at a working point and continue next time.
+## Parent check
 
-If stuck: Unplug before changing wires. Compare every connection with the project diagram, then run the last working code.
+Ask him to show the trigger and explain his arrow drawing.
 
 ## Next
 

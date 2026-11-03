@@ -24,4 +24,4 @@ If stuck: Read the first error line together, undo the last change, and rerun th
 
 ## Next
 
-[Week 3, Session B](../python/week-03-session-b.md).
+[Week 3 homework](../python/week-03-session-b.md).

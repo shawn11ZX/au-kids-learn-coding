@@ -1,27 +1,26 @@
-# Week 7, Session B: LED firefly
+# Week 7 Homework: LED firefly upgrade
 
 **Route:** Pico  
-**Time:** About 60 minutes. You may split it across days.  
-**Lesson:** Open [LED firefly](https://projects.raspberrypi.org/en/projects/led-firefly) (part of Introduction to Raspberry Pi Pico). Use its circuit diagram for every connection.
+**Type:** Homework. He works on his own. A parent checks the result at the end (5–10 minutes).  
+**Time:** About 15–30 minutes, on any day before the next session.  
+**Lesson:** Open the [LED firefly “Upgrade your project” step](https://projects.raspberrypi.org/en/projects/led-firefly/7). It is the last step of the project from Session A.
 
 ## Before starting
 
-- [ ] Complete the [previous session](../pico/week-07-session-a.md), or repeat it if the checkpoint was difficult.
-- [ ] Have ready: Pico 2 with soldered headers, micro-B USB data cable, breadboard, LED, project resistor, jumper wires, computer with Thonny.
-- [ ] Parent preparation: Open the working file; unplug the Pico before moving any wires.
+- [ ] Finish [Session A](../pico/week-07-session-a.md) first.
+- [ ] Open the saved project from Session A.
+- [ ] Ask a parent before changing any wires. Unplug the Pico first.
 
-## During the session
+## Homework
 
-1. **Recall (5 min):** Look at what you made in Session A and ask what should happen next.
-2. **Build or change (40 min):** Ask him to invent a three-flash pattern. Change only the timing code, run it, and record the pattern in the notebook.
-3. **Check (10 min):** Run, demonstrate or inspect the result. Ask what changed and what stayed the same.
-4. **Record (5 min):** Write or draw the result and one idea for next time.
+- [ ] Make up a new three-flash pattern. Change only the timing numbers.
+- [ ] Optional (from the Upgrade page): add a second LED firefly that flashes in the same pattern.
 
-## Finished when
+If stuck: unplug the Pico, compare every wire with the project diagram, and run the last working code. Then ask a parent.
 
-He can point to the line that changes the timing and show the pattern twice. If this takes longer, stop at a working point and continue next time.
+## Parent check
 
-If stuck: Unplug before changing wires. Compare every connection with the project diagram, then run the last working code.
+Ask him to point to the line that changes the timing and show the pattern twice.
 
 ## Next
 

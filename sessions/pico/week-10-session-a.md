@@ -24,4 +24,4 @@ If stuck: Unplug before changing wires. Compare every connection with the projec
 
 ## Next
 
-[Week 10, Session B](../pico/week-10-session-b.md).
+[Week 10 homework](../pico/week-10-session-b.md).

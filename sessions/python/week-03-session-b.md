@@ -1,27 +1,26 @@
-# Week 3, Session B: Rocket launch
+# Week 3 Homework: Rocket launch challenge
 
 **Route:** Python  
-**Time:** About 60 minutes. You may split it across days.  
-**Lesson:** Open [Rocket launch](https://projects.raspberrypi.org/en/projects/rocket-launch) (part of Introduction to Python).
+**Type:** Homework. He works on his own. A parent checks the result at the end (5–10 minutes).  
+**Time:** About 15–30 minutes, on any day before the next session.  
+**Lesson:** Open the [Rocket launch “Challenge” step](https://projects.raspberrypi.org/en/projects/rocket-launch/5). It is the last step of the project from Session A.
 
 ## Before starting
 
-- [ ] Complete the [previous session](../python/week-03-session-a.md), or repeat it if the checkpoint was difficult.
-- [ ] Have ready: Computer, browser, notebook.
-- [ ] Parent preparation: Open the saved project and prepare a short example of a repeated daily action.
+- [ ] Finish [Session A](../python/week-03-session-a.md) first.
+- [ ] Open the saved project from Session A.
 
-## During the session
+## Homework
 
-1. **Recall (5 min):** Look at what you made in Session A and ask what should happen next.
-2. **Build or change (40 min):** Make a different launch sequence or countdown. First describe what should repeat, then edit and run the code.
-3. **Check (10 min):** Run, demonstrate or inspect the result. Ask what changed and what stayed the same.
-4. **Record (5 min):** Write or draw the result and one idea for next time.
+- [ ] Give the smoke circles a range of different colours.
+- [ ] Make the rocket move faster or slower, and note which number he changed.
+- [ ] Optional: make the rocket land on a different planet.
 
-## Finished when
+If stuck: read the first error line, undo the last change, and run the last working version. Then ask a parent.
 
-He explains the loop and demonstrates two different countdown settings. If this takes longer, stop at a working point and continue next time.
+## Parent check
 
-If stuck: Read the first error line together, undo the last change, and rerun the last working version.
+Ask: “Which part of the code repeats? How many times?”
 
 ## Next
 

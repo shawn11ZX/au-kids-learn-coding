@@ -1,27 +1,31 @@
-# Week 12, Session B: Sensory gadget
+# Week 12 Homework: Sensory gadget upgrade
 
 **Route:** Pico  
-**Time:** About 60 minutes. You may split it across days.  
-**Lesson:** Open [Sensory gadget](https://projects.raspberrypi.org/en/projects/sensory-gadget) (part of Introduction to Raspberry Pi Pico). Use its circuit diagram for every connection.
+**Type:** Homework. He works on his own. A parent checks the result at the end (5–10 minutes).  
+**Time:** About 15–30 minutes, on any day before the next session.  
+**Lesson:** Open the [Sensory gadget “Upgrade your project” step](https://projects.raspberrypi.org/en/projects/sensory-gadget/4). It is the last step of the project from Session A.
 
 ## Before starting
 
-- [ ] Complete the [previous session](../pico/week-12-session-a.md), or repeat it if the checkpoint was difficult.
-- [ ] Have ready: Pico setup and the input/output parts selected from earlier projects, paper and pencil.
-- [ ] Parent preparation: Check the chosen robot kit and power supplies are ready for Week 13; keep the working gadget code.
+- [ ] Finish [Session A](../pico/week-12-session-a.md) first.
+- [ ] Open the saved project from Session A.
+- [ ] Ask a parent before changing any wires. Unplug the Pico first.
 
-## During the session
+## Homework
 
-1. **Recall (5 min):** Look at what you made in Session A and ask what should happen next.
-2. **Build or change (40 min):** Let him add one behaviour he chose. Have him demonstrate it without prompts, then draw input → decision → output.
-3. **Check (10 min):** Run, demonstrate or inspect the result. Ask what changed and what stayed the same.
-4. **Record (5 min):** Write or draw the result and one idea for next time.
+- [ ] Add one more input or output to his gadget.
+- [ ] Let someone use it, then improve one thing that was hard for them.
+- [ ] Draw input → decision → output for the new behaviour.
 
-## Finished when
+If stuck: unplug the Pico, compare every wire with the project diagram, and run the last working code. Then ask a parent.
 
-He can load code onto the Pico, identify the input and output, and change one behaviour. Repeat a Pico project if needed. If this takes longer, stop at a working point and continue next time.
+## Parent check
 
-If stuck: Unplug before changing wires. Compare every connection with the project diagram, then run the last working code.
+Stage check: he can load code onto the Pico, name the input and the output, and change one behaviour. If not, repeat a Pico project.
+
+## Parent
+
+- [ ] Check that the robot kit and its power supplies are ready for Week 13.
 
 ## Next
 

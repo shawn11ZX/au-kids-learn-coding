@@ -1,27 +1,26 @@
-# Week 2, Session B: Target practice
+# Week 2 Homework: Target practice challenge
 
 **Route:** Python  
-**Time:** About 60 minutes. You may split it across days.  
-**Lesson:** Open [Target practice](https://projects.raspberrypi.org/en/projects/target-practice) (part of Introduction to Python).
+**Type:** Homework. He works on his own. A parent checks the result at the end (5–10 minutes).  
+**Time:** About 15–30 minutes, on any day before the next session.  
+**Lesson:** Open the [Target practice “Challenge” step](https://projects.raspberrypi.org/en/projects/target-practice/7). It is the last step of the project from Session A.
 
 ## Before starting
 
-- [ ] Complete the [previous session](../python/week-02-session-a.md), or repeat it if the checkpoint was difficult.
-- [ ] Have ready: Computer, browser, saved Week 1 work, notebook.
-- [ ] Parent preparation: Have three example scores or target results ready.
+- [ ] Finish [Session A](../python/week-02-session-a.md) first.
+- [ ] Open the saved project from Session A.
 
-## During the session
+## Homework
 
-1. **Recall (5 min):** Look at what you made in Session A and ask what should happen next.
-2. **Build or change (40 min):** Let him change one scoring rule. Write three predicted results in the notebook, run the program, then compare predictions with results.
-3. **Check (10 min):** Run, demonstrate or inspect the result. Ask what changed and what stayed the same.
-4. **Record (5 min):** Write or draw the result and one idea for next time.
+- [ ] Add a fourth circle in a new colour that scores a different number of points.
+- [ ] Before running, write down the score he expects for three hits. Then compare with the real result.
+- [ ] Optional: make the game easier or harder by changing `frame_rate=2`.
 
-## Finished when
+If stuck: read the first error line, undo the last change, and run the last working version. Then ask a parent.
 
-Three test cases are recorded; he can explain one surprising result. If this takes longer, stop at a working point and continue next time.
+## Parent check
 
-If stuck: Read the first error line together, undo the last change, and rerun the last working version.
+Ask: “Which `if` or `elif` line gives the points for your new circle?”
 
 ## Next
 

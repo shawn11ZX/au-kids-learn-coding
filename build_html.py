@@ -368,7 +368,8 @@ def stage_page_body(key: str, label: str, blurb: str, paths: list[Path]) -> str:
     for path in paths:
         match = SESSION_NAME.fullmatch(path.name)
         rows.setdefault(int(match.group(1)), {})[match.group(2)] = path
-    table = ["<table>", "<thead><tr><th>Week</th><th>Session A</th><th>Session B</th></tr></thead>", "<tbody>"]
+    second = "Homework" if key in ("python", "pico") else "Session B"
+    table = ["<table>", f"<thead><tr><th>Week</th><th>Session A</th><th>{second}</th></tr></thead>", "<tbody>"]
     for week in sorted(rows):
         cells = []
         for part in "ab":

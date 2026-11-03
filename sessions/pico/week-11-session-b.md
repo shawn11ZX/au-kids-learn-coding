@@ -1,27 +1,30 @@
-# Week 11, Session B: Sound machine
+# Week 11 Homework: Sound machine upgrade
 
 **Route:** Pico  
-**Time:** About 60 minutes. You may split it across days.  
-**Lesson:** Open [Sound machine](https://projects.raspberrypi.org/en/projects/sound-machine) (part of Introduction to Raspberry Pi Pico). Use its circuit diagram for every connection.
+**Type:** Homework. He works on his own. A parent checks the result at the end (5–10 minutes).  
+**Time:** About 15–30 minutes, on any day before the next session.  
+**Lesson:** Open the [Sound machine “Upgrade your project” step](https://projects.raspberrypi.org/en/projects/sound-machine/6). It is the last step of the project from Session A.
 
 ## Before starting
 
-- [ ] Complete the [previous session](../pico/week-11-session-a.md), or repeat it if the checkpoint was difficult.
-- [ ] Have ready: Pico setup, passive piezo, buttons or dial, resistors, breadboard and wires in the project diagram.
-- [ ] Parent preparation: Check the Week 13 order status and reopen the last working program.
+- [ ] Finish [Session A](../pico/week-11-session-a.md) first.
+- [ ] Open the saved project from Session A.
+- [ ] Ask a parent before changing any wires. Unplug the Pico first.
 
-## During the session
+## Homework
 
-1. **Recall (5 min):** Look at what you made in Session A and ask what should happen next.
-2. **Build or change (40 min):** Let him make a short sound pattern another person can start. Have that person try it without instructions, then improve one part.
-3. **Check (10 min):** Run, demonstrate or inspect the result. Ask what changed and what stayed the same.
-4. **Record (5 min):** Write or draw the result and one idea for next time.
+- [ ] Make a short sound pattern that another person can start.
+- [ ] Let a family member try it without instructions. Change one thing that confused them.
 
-## Finished when
+If stuck: unplug the Pico, compare every wire with the project diagram, and run the last working code. Then ask a parent.
 
-Another person can trigger the pattern and he can explain how the code responds. If this takes longer, stop at a working point and continue next time.
+## Parent check
 
-If stuck: Unplug before changing wires. Compare every connection with the project diagram, then run the last working code.
+Ask him to explain how the code responds when someone presses the button.
+
+## Parent
+
+- [ ] Check that the parts for Week 13 are ordered.
 
 ## Next
 
